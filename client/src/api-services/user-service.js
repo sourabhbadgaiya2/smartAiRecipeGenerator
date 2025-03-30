@@ -5,7 +5,7 @@ export const getCurrentUser = async () => {
   return response.data;
 };
 
-export const getAllUsers = async () => {
-  const response = await axios.get("/api/users/get-all-users");
+export const updateUsers = async (data) => {
+  const response = await axios.put("/api/users/update-user", data);
   return response.data;
 };

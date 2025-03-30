@@ -1,12 +1,11 @@
-import { useState } from "react";
 import validator from "validator";
-import { Button, Form, Input, App } from "antd";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Input, App } from "antd";
 import { loginUser } from "../../api-services/auth-service";
 import { HideLoading, ShowLoading } from "../../store/features/alertSlice";
-import { useDispatch } from "react-redux";
 
-const Login = ({ setIsSignUpOpen }) => {
+const Login = ({ setIsSignUpOpen, onSuccess }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,11 +20,15 @@ const Login = ({ setIsSignUpOpen }) => {
 
       dispatch(ShowLoading());
       const response = await loginUser(sanitizedValues);
+
       message.success(response.message);
+      onSuccess();
       navigate("/Home");
     } catch (error) {
+      console.log(error);
       message.error(
-        error.response?.data.error ||
+        error.response?.data ||
+          error.response?.data.error ||
           error.response?.data.message ||
           error.message
       );

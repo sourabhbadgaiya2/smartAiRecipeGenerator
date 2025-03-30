@@ -15,7 +15,7 @@ export const getSaveRecipe = async (data) => {
   return response.data;
 };
 
-export const deleteRecipe = async (data) => {
-  const response = await axios.delete("/api/recipes/saved/:id", data);
+export const deletedRecipe = async (id) => {
+  const response = await axios.delete(`/api/recipes/saved/${id}`);
   return response.data;
 };

@@ -6,7 +6,7 @@ import { registerUser } from "../../api-services/auth-service";
 import { HideLoading, ShowLoading } from "../../store/features/alertSlice";
 import { useDispatch } from "react-redux";
 
-const Register = ({ setIsLoginOpen }) => {
+const Register = ({ setIsLoginOpen, onSuccess }) => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const dispatch = useDispatch();
@@ -24,8 +24,13 @@ const Register = ({ setIsLoginOpen }) => {
       const response = await registerUser(sanitizedValues);
       message.success(response.message);
       navigate("/login");
+      onSuccess();
     } catch (error) {
-      message.error(error.response?.data.error || error.response?.data.message);
+      message.error(
+        error.response?.data.error ||
+          error.response?.data.message ||
+          error.message
+      );
     } finally {
       dispatch(HideLoading());
     }

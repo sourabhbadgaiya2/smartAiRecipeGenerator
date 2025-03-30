@@ -416,3 +416,10 @@ DELETE /api/recipe/saved/:id
 | 401         | Unauthorized - Token missing or invalid |
 | 404         | Resource not found                      |
 | 500         | Server error                            |
+
+To start using the application, run the development server:
+
+```sh
+npm install
+nodemon run server
+```

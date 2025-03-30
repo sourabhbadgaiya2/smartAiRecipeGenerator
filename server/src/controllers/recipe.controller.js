@@ -18,8 +18,9 @@ export const generateNewRecipe = async (req, res, next) => {
 };
 
 export const saveRecipe = async (req, res, next) => {
-  const { title, ingredients, instructions, originalQuery } = req.body;
+  const { title, ingredients, instructions, preferences, cuisine } = req.body;
   const userId = req.user._id;
+  console.log(title, ingredients, instructions, preferences, cuisine);
 
   try {
     const existingRecipe = await Recipe.findOne({ userId, title });
@@ -31,7 +32,8 @@ export const saveRecipe = async (req, res, next) => {
       title,
       ingredients,
       instructions,
-      originalQuery,
+      preferences,
+      cuisine,
     });
     await newRecipe.save();
 

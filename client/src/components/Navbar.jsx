@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Drawer, Avatar, Dropdown, Space, Button, Modal } from "antd";
+import { Drawer, Avatar, Dropdown, Space, Button, Modal, App } from "antd";
 import { MenuOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Register from "../pages/auth/Register";
 import Login from "../pages/auth/Login";
 import Landing from "../pages/public/Landing";
+import { logoutUser } from "../api-services/auth-service";
+import { HideLoading, ShowLoading } from "../store/features/alertSlice";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -14,19 +16,34 @@ const Navbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.users);
+  const { message } = App.useApp();
 
   // Logout function
-  const handleSignOut = () => {
-    Cookies.remove("token");
-    navigate(0);
+  const handleSignOut = async () => {
+    try {
+      dispatch(ShowLoading());
+      const response = await logoutUser();
+      message.success(response.message);
+      Cookies.remove("token");
+      navigate(0);
+    } catch (error) {
+      message.error(
+        error.response?.data.error ||
+          error.response.data.message ||
+          error.message
+      );
+    } finally {
+      dispatch(HideLoading());
+    }
   };
 
   // Navigation links
   const dashboardNavigation = [
     { name: "Home", route: "/Home" },
     { name: "Create Recipes", route: "/create-recipe" },
-    { name: "About", route: "/" },
+    { name: "About", route: "/about" },
   ];
 
   const homeNavigation = [
@@ -39,7 +56,7 @@ const Navbar = () => {
   // User dropdown menu
   const userNavigation = [
     { name: "Your Profile", route: "/Profile", icon: <UserOutlined /> },
-    { name: "Sign out", route: "/auth/signout", icon: <LogoutOutlined /> },
+    { name: "Sign out", route: "/api/auth/logout", icon: <LogoutOutlined /> },
   ];
 
   const dropdownItems = userNavigation.map((item) => ({
@@ -47,7 +64,7 @@ const Navbar = () => {
     label: (
       <span
         onClick={
-          item.route === "/auth/signout"
+          item.route === "/api/auth/logout"
             ? handleSignOut
             : () => navigate(item.route)
         }
@@ -64,15 +81,22 @@ const Navbar = () => {
   return (
     <>
       <div className='hidden'>
-        <Landing setIsLoginOpen={() => setIsLoginOpen(true)} />
+        <Landing
+          setIsSignUpOpen={() => {
+            setIsSignUpOpen(true);
+            setIsLoginOpen(false);
+          }}
+        />
       </div>
       <header className='sticky top-0 z-50 bg-green-800 shadow-md px-6 py-1'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center gap-9'>
             {/* Logo */}
-            <Link to='/'>
-              <img src='logo.svg' alt='logo' className='w-16 h-16' />
-            </Link>
+            <div className='bg-white'>
+              <Link to='/Home'>
+                <img src='logo.svg' alt='logo' className='w-16 h-16' />
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             <nav className='hidden md:flex gap-4'>
@@ -80,10 +104,10 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.route}
-                  className={`px-3 py-2 rounded font-semibold ${
+                  className={`px-3 py-2  rounded font-semibold ${
                     location.pathname === item.route
                       ? "!bg-white !text-black"
-                      : "!text-white hover:!bg-green-700"
+                      : "hover:!bg-green-700 !text-white hover:!text-white"
                   }`}
                 >
                   {item.name}
@@ -96,18 +120,22 @@ const Navbar = () => {
           <div className='flex items-center gap-4'>
             {user ? (
               <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
-                <Space className='cursor-pointer text-white'>
-                  <Avatar className='!bg-[#679F38]'>
+                <Space className='cursor-pointer'>
+                  <Avatar className='!bg-[#679F38] font-bold'>
                     {user?.name?.charAt(0).toUpperCase() || <UserOutlined />}
                   </Avatar>
-                  <span className='hidden md:inline'>
+                  <span className='hidden text-white md:inline'>
                     {user?.name || "User"}
                   </span>
                 </Space>
               </Dropdown>
             ) : (
               <>
-                <Button onClick={() => setIsLoginOpen(true)} type='default'>
+                <Button
+                  className='!bg-[#e0eaff] hover:!bg-gray-200'
+                  onClick={() => setIsLoginOpen(true)}
+                  type='default'
+                >
                   Log in
                 </Button>
                 <Button onClick={() => setIsSignUpOpen(true)} type='primary'>
@@ -118,7 +146,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             <button
-              className='md:hidden cursor-pointer hover:bg-green-900 p-2 text-2xl rounded text-white'
+              className='md:hidden cursor-pointer font-semibold bg-green-900 p-2 text-2xl rounded text-white'
               onClick={() => setMobileMenuOpen(true)}
             >
               <MenuOutlined />
@@ -158,6 +186,7 @@ const Navbar = () => {
             setIsLoginOpen(true);
             setIsSignUpOpen(false);
           }}
+          onSuccess={() => setIsSignUpOpen(false)}
         />
       </Modal>
 
@@ -172,6 +201,7 @@ const Navbar = () => {
             setIsSignUpOpen(true);
             setIsLoginOpen(false);
           }}
+          onSuccess={() => setIsLoginOpen(false)}
         />
       </Modal>
     </>

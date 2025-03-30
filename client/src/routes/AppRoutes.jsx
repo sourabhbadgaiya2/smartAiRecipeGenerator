@@ -1,13 +1,14 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "../pages/public/Home";
-import Header from "../pages/private/Header";
+
 import ProtectedRoute from "../components/ProtectedRoute";
-import Hero from "../pages/private/Hero";
+
 import Navbar from "../components/Navbar";
 import Landing from "../pages/public/Landing";
 import Product from "../pages/public/Product";
 import Features from "../pages/public/Features";
 import GenerateRecipe from "../pages/private/recipe/GenerateRecipe";
+import Home from "../pages/private/Home";
+import ProfileInformation from "../pages/private/user/ProfileInformation";
 
 const AppRoutes = () => {
   return (
@@ -22,7 +23,7 @@ const AppRoutes = () => {
           path='/Home'
           element={
             <ProtectedRoute>
-              <Hero />
+              <Home />
             </ProtectedRoute>
           }
         />
@@ -31,6 +32,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <GenerateRecipe />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/Profile'
+          element={
+            <ProtectedRoute>
+              <ProfileInformation />
             </ProtectedRoute>
           }
         />

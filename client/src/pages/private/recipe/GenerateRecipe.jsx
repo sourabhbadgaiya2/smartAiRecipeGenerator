@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Form, Input, Select, Card, Spin, App } from "antd";
+import { Button, Form, Input, Card, Spin, App } from "antd";
 import { setGeneratedRecipe } from "../../../store/features/recipeSlice";
 import {
   generateRecipes,
@@ -15,6 +15,7 @@ const GenerateRecipe = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const generatedRecipe = useSelector((state) => state.recipe.generatedRecipe);
+  const [sanitizedInput, setSanitizedInput] = useState(null);
 
   const onFinish = useCallback(
     async (values) => {
@@ -24,16 +25,21 @@ const GenerateRecipe = () => {
           .split(",")
           .map((item) => item.trim())
           .filter((item) => item !== ""),
+        preferences: values.preferences
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item !== ""),
       };
 
       try {
         dispatch(ShowLoading());
-        // Sanitize Input
         const sanitizedValues = {
-          ingredients: formattedValues.ingredients.map((item) => item.trim()),
-          preferences: formattedValues.preferences || [],
+          ingredients: formattedValues.ingredients,
+          preferences: formattedValues.preferences,
           cuisine: formattedValues.cuisine || "",
         };
+
+        setSanitizedInput(sanitizedValues);
 
         const data = await generateRecipes(sanitizedValues);
         dispatch(setGeneratedRecipe(data));
@@ -50,8 +56,8 @@ const GenerateRecipe = () => {
   );
 
   const saveRecipe = async () => {
-    if (!generatedRecipe) {
-      message.error("No recipe available to save!");
+    if (!generatedRecipe || !sanitizedInput) {
+      message.error("No recipe or input available to save!");
       return;
     }
 
@@ -59,17 +65,19 @@ const GenerateRecipe = () => {
       dispatch(ShowLoading());
       const formattedRecipe = {
         ...generatedRecipe,
+        ...sanitizedInput,
         ingredients: Array.isArray(generatedRecipe.ingredients)
           ? generatedRecipe.ingredients
-          : [], // Ensure it's an array
+          : [],
         instructions: Array.isArray(generatedRecipe.instructions)
           ? generatedRecipe.instructions
-          : [], // Ensure it's an array
+          : [],
       };
+      console.log(formattedRecipe, "RRRR");
 
       await saveGenerateRecipe(formattedRecipe);
       message.success("Recipe Saved successfully!");
-      dispatch(setGeneratedRecipe(null)); // Reset state after saving
+      dispatch(setGeneratedRecipe(null));
       navigate("/Home");
     } catch (error) {
       console.error(error);
@@ -82,7 +90,7 @@ const GenerateRecipe = () => {
   };
 
   return (
-    <div className='flex bg-gray-100 min-h-[88vh] w-full overflow-hidden'>
+    <div className='flex bg-gray-100 min-h-[88vh] relative w-full overflow-hidden'>
       <Card className='w-full max-w-lg shadow-lg p-6'>
         <h1 className='text-2xl font-bold text-gray-700 mb-4'>
           Generate a New Recipe
@@ -102,11 +110,7 @@ const GenerateRecipe = () => {
           </Form.Item>
 
           <Form.Item name='preferences' label='Preferences'>
-            <Select mode='multiple' placeholder='Select preferences'>
-              <Select.Option value='vegan'>Vegan</Select.Option>
-              <Select.Option value='gluten-free'>Gluten-Free</Select.Option>
-              <Select.Option value='low-carb'>Low Carb</Select.Option>
-            </Select>
+            <Input.TextArea placeholder='Enter preferences, separated by commas (e.g. vegan, gluten-free, low-carb)' />
           </Form.Item>
 
           <Form.Item name='cuisine' label='Cuisine'>
@@ -118,6 +122,12 @@ const GenerateRecipe = () => {
           </Button>
         </Form>
       </Card>
+
+      <img
+        className='absolute -top-10 right-15 w-1/2 h-screen object-cover opacity-10 pointer-events-none select-none'
+        src='logo.svg'
+        alt='logo'
+      />
 
       {generatedRecipe && (
         <Card className='w-full relative pb-10 mt-6 p-6 max-h-[86vh] overflow-y-auto rounded-2xl shadow-xl bg-white/30 backdrop-blur-lg border border-white/40'>

@@ -19,19 +19,13 @@ const RecipeSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
-    originalQuery: {
-      ingredients: {
-        type: [String],
-        required: true,
-      },
-      preferences: {
-        type: [String],
-        default: [],
-      },
-      cuisine: {
-        type: String,
-        default: "",
-      },
+    preferences: {
+      type: [String],
+      default: [],
+    },
+    cuisine: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

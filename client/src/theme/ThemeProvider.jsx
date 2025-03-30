@@ -5,7 +5,7 @@ const ThemeProvider = ({ children }) => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#222831",
+          colorPrimary: "#1D4ED8",
           borderRadius: 2,
         },
         components: {

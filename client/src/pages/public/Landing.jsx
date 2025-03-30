@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
-
-const Landing = ({ setIsLoginOpen }) => {
+const Landing = ({ setIsSignUpOpen }) => {
   return (
-    <div className='text-center'>
-      <div className='mx-auto max-w-2xl py-32 sm:py-48 lg:py-17'>
+    <div className='text-center overflow-hidden'>
+      <div className='mx-auto max-w-2xl py-32 sm:py-48 lg:py-14'>
         <div className='hidden sm:mb-8 sm:flex sm:justify-center'>
           <div className='relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20'>
             Discover our new AI-powered recipe generator.
@@ -19,7 +17,7 @@ const Landing = ({ setIsLoginOpen }) => {
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           <button
             className='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer'
-            onClick={() => setIsLoginOpen(true)}
+            onClick={setIsSignUpOpen}
           >
             Get started
           </button>
