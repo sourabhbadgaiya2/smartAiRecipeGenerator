@@ -73,8 +73,6 @@ const GenerateRecipe = () => {
           ? generatedRecipe.instructions
           : [],
       };
-      console.log(formattedRecipe, "RRRR");
-
       await saveGenerateRecipe(formattedRecipe);
       message.success("Recipe Saved successfully!");
       dispatch(setGeneratedRecipe(null));
@@ -90,8 +88,8 @@ const GenerateRecipe = () => {
   };
 
   return (
-    <div className='flex bg-gray-100 min-h-[88vh] relative w-full overflow-hidden'>
-      <Card className='w-full max-w-lg shadow-lg p-6'>
+    <div className='flex flex-col-reverse lg:flex-row bg-gray-100 min-h-[88vh] relative w-full overflow-hidden'>
+      <Card className='w-full lg:max-w-lg shadow-lg p-6'>
         <h1 className='text-2xl font-bold text-gray-700 mb-4'>
           Generate a New Recipe
         </h1>
@@ -124,13 +122,13 @@ const GenerateRecipe = () => {
       </Card>
 
       <img
-        className='absolute -top-10 right-15 w-1/2 h-screen object-cover opacity-10 pointer-events-none select-none'
+        className='absolute hidden lg:block -top-10 right-15 w-1/2 h-screen object-cover opacity-10 pointer-events-none select-none'
         src='logo.svg'
         alt='logo'
       />
 
       {generatedRecipe && (
-        <Card className='w-full relative pb-10 mt-6 p-6 max-h-[86vh] overflow-y-auto rounded-2xl shadow-xl bg-white/30 backdrop-blur-lg border border-white/40'>
+        <Card className='w-full relative lg:w-2/3 pb-10 mt-6 p-6 max-h-[86vh] overflow-y-auto rounded-2xl shadow-xl bg-white/30 backdrop-blur-lg border border-white/40'>
           <div className='flex justify-end'>
             <Button
               type='primary'

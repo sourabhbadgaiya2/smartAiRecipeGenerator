@@ -25,12 +25,12 @@ const Login = ({ setIsSignUpOpen, onSuccess }) => {
       onSuccess();
       navigate("/Home");
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data.error);
       message.error(
-        error.response?.data ||
-          error.response?.data.error ||
-          error.response?.data.message ||
-          error.message
+        error?.response?.data.error ||
+          error?.response?.data.message ||
+          error?.response?.data ||
+          error?.message
       );
     } finally {
       dispatch(HideLoading());

@@ -23,7 +23,7 @@ const Register = ({ setIsLoginOpen, onSuccess }) => {
       dispatch(ShowLoading());
       const response = await registerUser(sanitizedValues);
       message.success(response.message);
-      navigate("/login");
+      setIsLoginOpen();
       onSuccess();
     } catch (error) {
       message.error(

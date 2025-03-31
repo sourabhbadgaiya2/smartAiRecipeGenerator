@@ -1,8 +1,8 @@
 import { App } from "antd";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { SetUser } from "../store/features/userSlice.js";
 import { getCurrentUser } from "../api-services/user-service";
 import { HideLoading, ShowLoading } from "../store/features/alertSlice";
@@ -27,6 +27,8 @@ const ProtectedRoute = ({ children }) => {
           error.response.data.message ||
           error.message
       );
+      Cookies.remove("token");
+
     } finally {
       dispatch(HideLoading());
     }

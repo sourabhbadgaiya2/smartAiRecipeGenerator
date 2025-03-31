@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Avatar, App } from "antd";
 import { UserOutlined, CloseOutlined } from "@ant-design/icons";
-import { MoveRight, X, Trash2 } from "lucide-react";
+import { MoveRight, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { ShowLoading, HideLoading } from "../../../store/features/alertSlice";
 import {
@@ -13,6 +13,7 @@ import SearchRecipes from "../../../components/SearchRecipes";
 
 const RecipeCard = () => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [searchVal, setSearchVal] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,13 +24,12 @@ const RecipeCard = () => {
   const { user } = useSelector((state) => state.users);
   const savedRecipes = useSelector((state) => state.recipe?.savedRecipes || []);
 
+  // Fetch saved recipes
   const fetchSavedRecipes = async () => {
-    if (savedRecipes.length) return;
     try {
       dispatch(ShowLoading());
       const data = await getSaveRecipe();
       dispatch(setSavedRecipes(data));
-      message.success("Saved recipes fetched successfully!");
     } catch (error) {
       message.error("Error fetching saved recipes:", error);
     } finally {
@@ -37,9 +37,22 @@ const RecipeCard = () => {
     }
   };
 
+  const filteredRecipes = searchVal
+    ? Array.isArray(searchVal)
+      ? savedRecipes.filter((recipe) =>
+          searchVal.some((filtered) => filtered._id === recipe._id)
+        )
+      : []
+    : savedRecipes;
+
   useEffect(() => {
     fetchSavedRecipes();
   }, []);
+
+  // Handle filtering based on the search value
+  const handleFilteredRecipes = (searchTerm) => {
+    setSearchVal(searchTerm);
+  };
 
   const showRecipeDetails = (recipe) => {
     setSelectedRecipe(recipe);
@@ -62,7 +75,6 @@ const RecipeCard = () => {
       dispatch(
         setSavedRecipes(savedRecipes.filter((recipe) => recipe._id !== id))
       );
-
       message.success(response.message);
       fetchSavedRecipes();
       setSelectedRecipe(null);
@@ -77,55 +89,59 @@ const RecipeCard = () => {
 
   return (
     <>
-      {/* <SearchRecipes recipes={savedRecipes} /> */}
+      <SearchRecipes recipes={savedRecipes} onFilter={handleFilteredRecipes} />
 
       <div className='grid grid-cols-1 md:grid-cols-4 px-4 py-2 gap-4'>
-        {savedRecipes.map((recipe) => (
-          <div
-            key={recipe._id}
-            className='recipe-card max-w-sm bg-gradient-to-r from-slate-200 to-stone-100 border border-gray-200 rounded-lg shadow-lg mt-4 mb-2 transform transition-transform hover:scale-105 hover:shadow-lg flex flex-col h-full'
-          >
-            <div className='p-5 flex-grow'>
-              <h5 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 drop-shadow-lg'>
-                {recipe.title}
-              </h5>
-              <h6 className='mt-4 font-semibold'>Ingredients:</h6>
-              <div className='flex flex-wrap gap-2 mt-2'>
-                {recipe.ingredients.slice(0, 3).map((item, index) => (
-                  <span
-                    key={index}
-                    className='bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded'
-                  >
-                    {item}
-                  </span>
-                ))}
-                {recipe.ingredients.length > 3 && (
-                  <span className='text-gray-500 text-sm'>
-                    +{recipe.ingredients.length - 3} more
-                  </span>
-                )}
-              </div>
-
-              <div className='flex flex-wrap justify-center gap-3 mt-2'>
-                {recipe.preferences.map((item, index) => (
-                  <span
-                    key={index}
-                    className='bg-purple-100 text-purple-800 text-lg font-medium px-2.5 py-0.5 rounded'
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              className='w-full !bg-blue-700 !text-white !rounded-lg hover:!bg-blue-800'
-              onClick={() => showRecipeDetails(recipe)}
+        {filteredRecipes.length > 0 ? (
+          filteredRecipes.map((recipe) => (
+            <div
+              key={recipe._id}
+              className='recipe-card max-w-sm bg-gradient-to-r from-slate-200 to-stone-100 border border-gray-200 rounded-lg shadow-lg mt-4 mb-2 transform transition-transform hover:scale-105 hover:shadow-lg flex flex-col h-full'
             >
-              See Recipe <MoveRight className='ml-2' />
-            </Button>
-          </div>
-        ))}
+              <div className='p-5 flex-grow'>
+                <h5 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 drop-shadow-lg'>
+                  {recipe.title}
+                </h5>
+                <h6 className='mt-4 font-semibold'>Ingredients:</h6>
+                <div className='flex flex-wrap gap-2 mt-2'>
+                  {recipe.ingredients.slice(0, 3).map((item, index) => (
+                    <span
+                      key={index}
+                      className='bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded'
+                    >
+                      {item}
+                    </span>
+                  ))}
+                  {recipe.ingredients.length > 3 && (
+                    <span className='text-gray-500 text-sm'>
+                      +{recipe.ingredients.length - 3} more
+                    </span>
+                  )}
+                </div>
+
+                <div className='flex flex-wrap justify-center items-end gap-3 mt-4'>
+                  {recipe.preferences.map((item, index) => (
+                    <span
+                      key={index}
+                      className='bg-purple-100 text-purple-800 text-lg font-medium px-2.5 py-0.5 rounded hover:scale-110'
+                    >
+                      {item.slice(0, 1).toUpperCase() + item.slice(1)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <Button
+                className='w-full !bg-blue-700 !text-white !rounded-lg hover:!bg-blue-800'
+                onClick={() => showRecipeDetails(recipe)}
+              >
+                See Recipe <MoveRight className='ml-2' />
+              </Button>
+            </div>
+          ))
+        ) : (
+          <p>No recipes found matching your search criteria.</p>
+        )}
       </div>
 
       {selectedRecipe && (
@@ -142,7 +158,7 @@ const RecipeCard = () => {
                 </span>
               </strong>
             </div>
-            <div className='flex gap-2 '>
+            <div className='flex gap-2'>
               <Button
                 type='text'
                 danger
@@ -178,14 +194,13 @@ const RecipeCard = () => {
           <h3 className='text-xl font-bold mb-2 text-gray-700'>
             Dietary Preference:
           </h3>
-
           <div className='flex flex-wrap gap-2 mb-4'>
             {selectedRecipe.preferences.map((item, index) => (
               <span
                 key={index}
                 className='bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded'
               >
-                {item}
+                {item.slice(0, 1).toUpperCase() + item.slice(1)}
               </span>
             ))}
           </div>
