@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Register from "../pages/auth/Register";
 import Login from "../pages/auth/Login";
-import Landing from "../pages/public/Landing";
+
 import { logoutUser } from "../api-services/auth-service";
 import { HideLoading, ShowLoading } from "../store/features/alertSlice";
 
@@ -43,14 +43,22 @@ const Navbar = () => {
   const dashboardNavigation = [
     { name: "Home", route: "/Home" },
     { name: "Create Recipes", route: "/create-recipe" },
-    { name: "About", route: "/about" },
+    {
+      name: "About",
+      route: "https://github.com/sourabhbadgaiya2/smartAiRecipeGenerator",
+      external: true, // Flag to identify external links
+    },
   ];
 
   const homeNavigation = [
     { name: "Home", route: "/" },
     { name: "Product", route: "/product" },
     { name: "Features", route: "/features" },
-    { name: "About", route: "/about" },
+    {
+      name: "About",
+      route: "https://github.com/sourabhbadgaiya2/smartAiRecipeGenerator",
+      external: true, // Flag to identify external links
+    },
   ];
 
   // User dropdown menu
@@ -80,14 +88,6 @@ const Navbar = () => {
 
   return (
     <>
-      <div className='hidden'>
-        <Landing
-          setIsSignUpOpen={() => {
-            setIsSignUpOpen(true);
-            setIsLoginOpen(false);
-          }}
-        />
-      </div>
       <header className='sticky top-0 z-50 bg-green-800 shadow-md px-6 py-1'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center gap-9'>
@@ -100,19 +100,31 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <nav className='hidden md:flex gap-4'>
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.route}
-                  className={`px-3 py-2  rounded font-semibold ${
-                    location.pathname === item.route
-                      ? "!bg-white !text-black"
-                      : "hover:!bg-green-700 !text-white hover:!text-white"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navigation.map((item) =>
+                item.external ? ( // External link ke liye alag handle karo
+                  <a
+                    key={item.name}
+                    href={item.route}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='px-3 py-2 rounded font-semibold hover:!bg-green-700 !text-white hover:!text-white'
+                  >
+                    {item.name}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.route}
+                    className={`px-3 py-2  rounded font-semibold ${
+                      location.pathname === item.route
+                        ? "!bg-white !text-black"
+                        : "hover:!bg-green-700 !text-white hover:!text-white"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
 
@@ -162,16 +174,29 @@ const Navbar = () => {
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
       >
-        {navigation.map((item) => (
-          <Link
-            key={item.name}
-            to={item.route}
-            className='block w-full py-2 text-lg'
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {item.name}
-          </Link>
-        ))}
+        {navigation.map((item) =>
+          item.external ? ( // External link ke liye <a> tag use karo
+            <a
+              key={item.name}
+              href={item.route}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block w-full py-2 text-lg'
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.name}
+            </a>
+          ) : (
+            <Link
+              key={item.name}
+              to={item.route}
+              className='block w-full py-2 text-lg'
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.name}
+            </Link>
+          )
+        )}
       </Drawer>
 
       {/* Modals */}

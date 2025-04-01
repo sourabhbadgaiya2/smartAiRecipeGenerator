@@ -9,6 +9,7 @@ const Features = ({ resetPage }) => {
         <div className='relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20'>
           Discover our new AI-powered recipe generator.
         </div>
+        
       </div>
       <div className='flex flex-col justify-center items-center px-4 md:px-8 lg:px-12'>
         <h1 className='mb-2 text-4xl font-semibold text-gray-900  text-center'>

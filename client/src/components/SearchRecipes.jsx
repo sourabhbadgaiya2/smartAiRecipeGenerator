@@ -52,7 +52,7 @@ const SearchRecipes = ({ recipes, onFilter }) => {
               searchVal.trim() && (
                 <Space>
                   <CloseOutlined
-                    onClick={() => (setSearchVal(""), navigate(0))}
+                    onClick={() => (setSearchVal(""), handleSearch(""))}
                     style={{ color: "#d32f2f", cursor: "pointer" }}
                   />
                 </Space>

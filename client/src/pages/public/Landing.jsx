@@ -1,4 +1,8 @@
-const Landing = ({ setIsSignUpOpen }) => {
+import { App } from "antd";
+
+const Landing = () => {
+  const { message } = App.useApp();
+
   return (
     <div className='text-center overflow-hidden'>
       <div className='mx-auto max-w-2xl py-32 sm:py-48 lg:py-14'>
@@ -17,7 +21,11 @@ const Landing = ({ setIsSignUpOpen }) => {
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           <button
             className='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer'
-            onClick={setIsSignUpOpen}
+            onClick={() =>
+              message.info(
+                "🔒 Please login from the top-right corner to start."
+              )
+            }
           >
             Get started
           </button>
