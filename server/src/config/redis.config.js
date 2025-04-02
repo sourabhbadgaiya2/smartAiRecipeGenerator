@@ -1,9 +1,10 @@
 import Redis from "ioredis";
+import config from "./env.config.js";
 
 const redisClient = new Redis({
-  port: 6379,
-  host: "127.0.0.1",
-  password: "",
+  port: config.REDIS_PORT,
+  host: config.REDIS_HOST,
+  password: config.REDIS_PASSWORD,
   retryStrategy: (times) => Math.min(times * 50, 2000), // Retry with max 2s delay
 });
 
