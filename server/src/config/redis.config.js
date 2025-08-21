@@ -1,10 +1,12 @@
 import Redis from "ioredis";
 import config from "./env.config.js";
 
+// redis-13462.c212.ap-south-1-1.ec2.redns.redis-cloud.com:13462
+
 const redisClient = new Redis({
-  port: config.REDIS_PORT,
-  host: config.REDIS_HOST,
-  password: config.REDIS_PASSWORD,
+  port: config.13462,
+  host: redis-13462.c212.ap-south-1-1.ec2.redns.redis-cloud.com,
+  password: wq4UevVau6wk8AdH4j5rZgKZm50RScgO,
   retryStrategy: (times) => Math.min(times * 50, 2000), // Retry with max 2s delay
 });
 
